@@ -6,6 +6,7 @@ import com.example.spring_security_test.repository.OurUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -63,12 +64,12 @@ public class AuthService {
         ReqRes response = new ReqRes();
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
-            var user = ourUserRepository.findByEmail(signInRequest.getEmail()).orElseThrow();
+            OurUsers user = ourUserRepository.findByEmail(signInRequest.getEmail()).orElseThrow();
             System.out.println("User Is: " + user);
             var jwt = jwtUtils.generateToken(user);
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
             response.setStatusCode(200);
-            response.setToken(refreshToken);
+            response.setToken(jwt);
             response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hr");
             response.setMessage("Successfully Sign In");

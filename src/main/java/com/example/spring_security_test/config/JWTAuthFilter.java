@@ -22,24 +22,25 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private JWTUtils jwtUtils;
+
     @Autowired
-    private OurUserDetailService ourUserDetailsService;
+    private OurUserDetailService ourUserDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        final  String jwtToken;
+        final String jwtToken;
         final String userEmail;
-        if (authHeader == null || authHeader.isBlank()) {
+        if(authHeader == null || authHeader.isBlank()){
             filterChain.doFilter(request, response);
             return;
         }
         jwtToken = authHeader.substring(7);
         userEmail = jwtUtils.extractUsername(jwtToken);
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = ourUserDetailsService.loadUserByUsername(userEmail);
+        if(userEmail == null && SecurityContextHolder.getContext().getAuthentication() == null){
+            UserDetails userDetails = ourUserDetailService.loadUserByUsername(userEmail);
 
-            if (jwtUtils.isTokenValid(jwtToken, userDetails)) {
+            if(jwtUtils.isTokenValid(jwtToken, userDetails)){
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
