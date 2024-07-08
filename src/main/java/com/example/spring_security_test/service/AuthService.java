@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -26,25 +27,37 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public ReqRes signUp(ReqRes registrationRequest){
+    public ReqRes signUp(ReqRes registrationRequest) {
         ReqRes resp = new ReqRes();
         try {
+            // Kiểm tra xem email đã tồn tại trong hệ thống hay chưa
+            Optional<OurUsers> existingUser = ourUserRepository.findByEmail(registrationRequest.getEmail());
+            if (existingUser.isPresent()) {
+                resp.setStatusCode(400); // Mã lỗi bad request có thể thay đổi tùy theo cách xử lý của bạn
+                resp.setMessage("Email already exists: " + registrationRequest.getEmail());
+                return resp;
+            }
             OurUsers ourUsers = new OurUsers();
             ourUsers.setEmail(registrationRequest.getEmail());
             ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             ourUsers.setRole(registrationRequest.getRole());
             OurUsers ourUserResult = ourUserRepository.save(ourUsers);
-            if(ourUserResult != null && ourUserResult.getId() > 0){
+
+            if (ourUserResult != null && ourUserResult.getId() > 0) {
                 resp.setOurUsers(ourUserResult);
                 resp.setMessage("User Saved Successfully");
                 resp.setStatusCode(200);
+            } else {
+                resp.setStatusCode(500);
+                resp.setMessage("Failed to save user");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             resp.setStatusCode(500);
             resp.setError(e.getMessage());
         }
         return resp;
     }
+
 
     public ReqRes signIn(ReqRes signInRequest){
         ReqRes response = new ReqRes();
