@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -29,7 +26,10 @@ public class JWTUtils {
     }
 
     public String generateToken(OurUsers ourUsers) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", ourUsers.getRole());
         return Jwts.builder()
+                .claims(claims)
                 .subject(ourUsers.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
