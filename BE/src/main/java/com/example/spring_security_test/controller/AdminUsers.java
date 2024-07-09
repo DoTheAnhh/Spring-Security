@@ -22,7 +22,7 @@ public class AdminUsers {
     }
 
     @PostMapping("/admin/saveProduct")
-    public ResponseEntity<Object> signUp (@RequestBody ReqRes signUpRequest){
+    public ResponseEntity<Object> saveProduct (@RequestBody ReqRes signUpRequest){
         Product productToSave = new Product();
         productToSave.setName(signUpRequest.getName());
         return ResponseEntity.ok(productRepository.save(productToSave));
