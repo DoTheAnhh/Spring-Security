@@ -30,7 +30,7 @@ public class JWTUtils {
 
     public String generateToken(OurUsers ourUsers) {
         return Jwts.builder()
-                .subject(ourUsers.getRole())
+                .subject(ourUsers.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(Key)
@@ -40,7 +40,7 @@ public class JWTUtils {
     public String generateRefreshToken(HashMap<String, Objects> claims, OurUsers ourUsers) {
         return Jwts.builder()
                 .claims(claims)
-                .subject(ourUsers.getRole())
+                .subject(ourUsers.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(Key)

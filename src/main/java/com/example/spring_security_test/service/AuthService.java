@@ -6,12 +6,10 @@ import com.example.spring_security_test.repository.OurUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -31,11 +29,10 @@ public class AuthService {
     public ReqRes signUp(ReqRes registrationRequest) {
         ReqRes resp = new ReqRes();
         try {
-            // Kiểm tra xem email đã tồn tại trong hệ thống hay chưa
-            Optional<OurUsers> existingUser = ourUserRepository.findByEmail(registrationRequest.getEmail());
-            if (existingUser.isPresent()) {
-                resp.setStatusCode(400); // Mã lỗi bad request có thể thay đổi tùy theo cách xử lý của bạn
-                resp.setMessage("Email already exists: " + registrationRequest.getEmail());
+            // Kiểm tra xem email đã tồn tại hay chưa
+            if (ourUserRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
+                resp.setStatusCode(400);
+                resp.setMessage("Email already exists");
                 return resp;
             }
             OurUsers ourUsers = new OurUsers();
@@ -43,14 +40,10 @@ public class AuthService {
             ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             ourUsers.setRole(registrationRequest.getRole());
             OurUsers ourUserResult = ourUserRepository.save(ourUsers);
-
             if (ourUserResult != null && ourUserResult.getId() > 0) {
                 resp.setOurUsers(ourUserResult);
                 resp.setMessage("User Saved Successfully");
                 resp.setStatusCode(200);
-            } else {
-                resp.setStatusCode(500);
-                resp.setMessage("Failed to save user");
             }
         } catch (Exception e) {
             resp.setStatusCode(500);
@@ -59,13 +52,11 @@ public class AuthService {
         return resp;
     }
 
-
-    public ReqRes signIn(ReqRes signInRequest){
+    public ReqRes signIn(ReqRes signInRequest) {
         ReqRes response = new ReqRes();
-        try{
+        try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
             OurUsers user = ourUserRepository.findByEmail(signInRequest.getEmail()).orElseThrow();
-            System.out.println("User Is: " + user);
             var jwt = jwtUtils.generateToken(user);
             var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
             response.setStatusCode(200);
@@ -73,7 +64,7 @@ public class AuthService {
             response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hr");
             response.setMessage("Successfully Sign In");
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setStatusCode(500);
             response.setError(e.getMessage());
         }
