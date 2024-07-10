@@ -1,7 +1,7 @@
-package com.example.spring_security_test.controller;
+package com.example.spring_security_test.controller.auth;
 
 import com.example.spring_security_test.dto.ReqRes;
-import com.example.spring_security_test.service.AuthService;
+import com.example.spring_security_test.service.security_service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

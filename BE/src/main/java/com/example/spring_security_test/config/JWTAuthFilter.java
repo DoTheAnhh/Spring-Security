@@ -1,7 +1,7 @@
 package com.example.spring_security_test.config;
 
-import com.example.spring_security_test.service.JWTUtils;
-import com.example.spring_security_test.service.OurUserDetailService;
+import com.example.spring_security_test.service.security_service.JWTUtils;
+import com.example.spring_security_test.service.security_service.OurUserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

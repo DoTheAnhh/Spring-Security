@@ -1,6 +1,6 @@
 package com.example.spring_security_test.config;
 
-import com.example.spring_security_test.service.OurUserDetailService;
+import com.example.spring_security_test.service.security_service.OurUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,10 +33,21 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("/auth/**", "/public/**").permitAll()
-                                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/user/**").hasAnyAuthority("USER")
-                                .requestMatchers("/adminuser/**").hasAnyAuthority("USER", "ADMIN")
+                        req
+                                //AUTH
+                                .requestMatchers("/auth/**").permitAll()
+
+                                //ADMIN
+                                .requestMatchers("/product/save-product").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/product/edit-product/**").hasAnyAuthority( "ADMIN")
+
+                                .requestMatchers("/our-user").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/our-user/save-our-user").hasAnyAuthority( "ADMIN")
+                                .requestMatchers("/our-user/edit-our-user/**").hasAnyAuthority( "ADMIN")
+
+                                 //ADMIN + USER
+                                .requestMatchers("/product").hasAnyAuthority("USER", "ADMIN")
+
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(

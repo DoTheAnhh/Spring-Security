@@ -1,4 +1,4 @@
-package com.example.spring_security_test.service;
+package com.example.spring_security_test.service.security_service;
 
 import com.example.spring_security_test.entity.OurUsers;
 import io.jsonwebtoken.Claims;

@@ -1,4 +1,4 @@
-package com.example.spring_security_test.service;
+package com.example.spring_security_test.service.security_service;
 
 import com.example.spring_security_test.repository.OurUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
